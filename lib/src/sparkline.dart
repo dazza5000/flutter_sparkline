@@ -28,6 +28,9 @@ enum PointsMode {
 
   /// Draw only the last point in the data set.
   last,
+
+  /// Specify the point to show in the data set.
+  single,
 }
 
 /// A widget that draws a sparkline chart.
@@ -74,6 +77,7 @@ class Sparkline extends StatelessWidget {
     this.gridLineWidth = 0.5,
     this.gridLineLabelColor = Colors.grey,
     this.labelPrefix = "\$",
+    this.pointSingle,
   })  : assert(data != null),
         assert(lineWidth != null),
         assert(lineColor != null),
@@ -182,6 +186,8 @@ class Sparkline extends StatelessWidget {
   /// Symbol prefix for grid line labels
   final String labelPrefix;
 
+  final int pointSingle;
+
   @override
   Widget build(BuildContext context) {
     return new LimitedBox(
@@ -206,7 +212,8 @@ class Sparkline extends StatelessWidget {
           gridLineAmount: gridLineAmount,
           gridLineLabelColor: gridLineLabelColor,
           gridLineWidth: gridLineWidth,
-          labelPrefix: labelPrefix
+          labelPrefix: labelPrefix,
+          pointSingle: pointSingle
         ),
       ),
     );
@@ -214,6 +221,7 @@ class Sparkline extends StatelessWidget {
 }
 
 class _SparklinePainter extends CustomPainter {
+
   _SparklinePainter(
     this.dataPoints, {
     @required this.lineWidth,
@@ -231,7 +239,8 @@ class _SparklinePainter extends CustomPainter {
     this.gridLineAmount,
     this.gridLineWidth,
     this.gridLineLabelColor,
-    this.labelPrefix
+    this.labelPrefix,
+        this.pointSingle
     })  : _max = dataPoints.reduce(math.max),
       _min = dataPoints.reduce(math.min);
 
@@ -260,6 +269,8 @@ class _SparklinePainter extends CustomPainter {
   final double gridLineWidth;
   final Color gridLineLabelColor;
   final String labelPrefix;
+
+  final int pointSingle;
 
   List<TextPainter> gridLineTextPainters = [];
 
@@ -340,6 +351,10 @@ class _SparklinePainter extends CustomPainter {
       }
 
       if (pointsMode == PointsMode.last && i == dataPoints.length - 1) {
+        points.add(new Offset(x, y));
+      }
+
+      if (pointsMode == PointsMode.single && pointSingle != null && pointSingle == i) {
         points.add(new Offset(x, y));
       }
 
